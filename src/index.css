@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Topic colors */
+  --color-reading: #3b82f6;
+  --color-comprehension: #a855f7;
+  --color-writing: #22c55e;
+  --color-vocabulary: #f97316;
+  
+  /* Feedback colors */
+  --color-correct: #22c55e;
+  --color-wrong: #ef4444;
+  
+  /* Gradients */
+  --gradient-reading: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --gradient-comprehension: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+  --gradient-writing: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+  --gradient-vocabulary: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+  
+  /* Background */
+  --bg-main: linear-gradient(160deg, #fefdfb 0%, #f5ebd6 50%, #fdf9f3 100%);
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  html {
+    font-family: 'Rubik', sans-serif;
+    direction: rtl;
+  }
+  
+  body {
+    @apply bg-sand-100 text-night-900 antialiased;
+    background: var(--bg-main);
+    min-height: 100vh;
+  }
+  
+  /* RTL scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-sand-200 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-sand-400 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-sand-500;
+  }
+}
+
+@layer components {
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-3xl shadow-card p-6 transition-all duration-200;
+  }
+  
+  .card-interactive {
+    @apply card cursor-pointer hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:shadow-card;
+  }
+  
+  /* Button base */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-semibold text-lg transition-all duration-200;
+    @apply focus:outline-none focus:ring-4 focus:ring-offset-2;
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  .btn-primary {
+    @apply btn bg-gradient-to-br from-reading-500 to-reading-700 text-white;
+    @apply hover:from-reading-400 hover:to-reading-600;
+    @apply focus:ring-reading-300;
+    @apply active:scale-[0.98];
+  }
+  
+  .btn-secondary {
+    @apply btn bg-white text-night-800 border-2 border-sand-300;
+    @apply hover:bg-sand-100 hover:border-sand-400;
+    @apply focus:ring-sand-300;
+    @apply active:scale-[0.98];
+  }
+  
+  .btn-topic-reading {
+    @apply btn bg-gradient-to-br from-reading-500 to-reading-700 text-white shadow-glow-blue;
+  }
+  
+  .btn-topic-comprehension {
+    @apply btn bg-gradient-to-br from-comprehension-500 to-comprehension-700 text-white shadow-glow-purple;
+  }
+  
+  .btn-topic-writing {
+    @apply btn bg-gradient-to-br from-writing-500 to-writing-700 text-white shadow-glow-green;
+  }
+  
+  .btn-topic-vocabulary {
+    @apply btn bg-gradient-to-br from-vocabulary-500 to-vocabulary-700 text-white shadow-glow-orange;
+  }
+  
+  /* Progress bar */
+  .progress-bar {
+    @apply h-3 bg-sand-200 rounded-full overflow-hidden;
+  }
+  
+  .progress-bar-fill {
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+  }
+  
+  /* Option chips (for MCQ) */
+  .option-chip {
+    @apply card-interactive text-xl font-medium text-center py-5;
+    min-height: 72px;
+  }
+  
+  .option-chip-selected {
+    @apply ring-4 ring-reading-400 bg-reading-50;
+  }
+  
+  .option-chip-correct {
+    @apply bg-writing-100 ring-4 ring-writing-500 text-writing-700;
+  }
+  
+  .option-chip-wrong {
+    @apply bg-red-100 ring-4 ring-red-500 text-red-700 animate-shake;
+  }
+  
+  /* Draggable item */
+  .drag-item {
+    @apply bg-white rounded-2xl shadow-soft px-4 py-3 cursor-grab active:cursor-grabbing;
+    @apply border-2 border-transparent hover:border-reading-300;
+    @apply transition-colors duration-150;
+  }
+  
+  .drag-item-dragging {
+    @apply shadow-card scale-105 border-reading-500;
+  }
+  
+  /* Drop zone */
+  .drop-zone {
+    @apply border-2 border-dashed border-sand-400 rounded-2xl p-4 min-h-[60px];
+    @apply transition-colors duration-150;
+  }
+  
+  .drop-zone-active {
+    @apply border-reading-400 bg-reading-50;
+  }
+  
+  /* Topic badge */
+  .topic-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold;
+  }
+  
+  .topic-badge-reading {
+    @apply topic-badge bg-reading-100 text-reading-700;
+  }
+  
+  .topic-badge-comprehension {
+    @apply topic-badge bg-comprehension-100 text-comprehension-700;
+  }
+  
+  .topic-badge-writing {
+    @apply topic-badge bg-writing-100 text-writing-700;
+  }
+  
+  .topic-badge-vocabulary {
+    @apply topic-badge bg-vocabulary-100 text-vocabulary-700;
+  }
+}
+
+@layer utilities {
+  /* Feedback overlay */
+  .feedback-correct {
+    @apply bg-writing-500/10;
+  }
+  
+  .feedback-wrong {
+    @apply bg-red-500/10;
+  }
+  
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-lg;
+  }
+  
+  /* Hebrew text utilities */
+  .text-hebrew {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  /* Large tap target for kids */
+  .tap-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Confetti animation */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100%) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: fixed;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  animation: confetti-fall 2s ease-out forwards;
+}
+
