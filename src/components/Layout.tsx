@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import XPNotification from './ui/XPNotification';
 import { useStore } from '../store/useStore';
 
 export default function Layout() {
@@ -9,6 +10,9 @@ export default function Layout() {
     <div className="min-h-screen flex">
       {/* Sidebar */}
       <Sidebar />
+      
+      {/* XP Animation */}
+      <XPNotification />
       
       {/* Main content */}
       <main 

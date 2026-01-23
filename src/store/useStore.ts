@@ -22,6 +22,12 @@ const XP_RULES = {
   streakBonus: 1,
 };
 
+interface XPGainEvent {
+  amount: number;
+  topicId: TopicId;
+  timestamp: number;
+}
+
 interface AppState {
   // User and progress
   userProgress: UserProgress;
@@ -34,6 +40,9 @@ interface AppState {
   // UI state
   sidebarOpen: boolean;
   isTeacherView: boolean;
+  
+  // XP animation
+  lastXpGain: XPGainEvent | null;
   
   // Actions
   setHasSeenIntro: (seen: boolean) => void;
@@ -113,6 +122,7 @@ export const useStore = create<AppState>()(
       consecutiveCorrect: 0,
       sidebarOpen: true,
       isTeacherView: false,
+      lastXpGain: null,
 
       setHasSeenIntro: (seen) => set({ hasSeenIntro: seen }),
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
@@ -218,6 +228,12 @@ export const useStore = create<AppState>()(
               ...userProgress.topics,
               [topicId]: topicProgress,
             },
+          },
+          // Trigger XP animation
+          lastXpGain: {
+            amount: xpEarned,
+            topicId,
+            timestamp: Date.now(),
           },
         });
 

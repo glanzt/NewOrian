@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -13,7 +14,7 @@ import {
   Minus
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { TOPICS } from '../types';
+import { TOPICS, type TopicId } from '../types';
 import clsx from 'clsx';
 
 const navItems = [
@@ -24,26 +25,30 @@ const navItems = [
   { path: '/rewards', icon: Trophy, label: 'פרסים' },
 ];
 
-const topicColorClasses: Record<string, { bg: string; fill: string; text: string }> = {
+const topicColorClasses: Record<string, { bg: string; fill: string; text: string; glow: string }> = {
   reading: { 
     bg: 'bg-reading-100', 
     fill: 'bg-gradient-to-l from-reading-500 to-reading-400',
-    text: 'text-reading-700'
+    text: 'text-reading-700',
+    glow: 'shadow-[0_0_20px_rgba(59,130,246,0.6)]'
   },
   comprehension: { 
     bg: 'bg-comprehension-100', 
     fill: 'bg-gradient-to-l from-comprehension-500 to-comprehension-400',
-    text: 'text-comprehension-700'
+    text: 'text-comprehension-700',
+    glow: 'shadow-[0_0_20px_rgba(168,85,247,0.6)]'
   },
   writing: { 
     bg: 'bg-writing-100', 
     fill: 'bg-gradient-to-l from-writing-500 to-writing-400',
-    text: 'text-writing-700'
+    text: 'text-writing-700',
+    glow: 'shadow-[0_0_20px_rgba(34,197,94,0.6)]'
   },
   vocabulary: { 
     bg: 'bg-vocabulary-100', 
     fill: 'bg-gradient-to-l from-vocabulary-500 to-vocabulary-400',
-    text: 'text-vocabulary-700'
+    text: 'text-vocabulary-700',
+    glow: 'shadow-[0_0_20px_rgba(249,115,22,0.6)]'
   },
 };
 
@@ -55,7 +60,19 @@ function TrendIcon({ trend }: { trend: 'up' | 'down' | 'stable' }) {
 
 export default function Sidebar() {
   const location = useLocation();
-  const { sidebarOpen, setSidebarOpen, userProgress, getXpProgress } = useStore();
+  const { sidebarOpen, setSidebarOpen, userProgress, getXpProgress, lastXpGain } = useStore();
+  const [glowingTopic, setGlowingTopic] = useState<TopicId | null>(null);
+
+  // Track XP gains and trigger glow animation
+  useEffect(() => {
+    if (lastXpGain && sidebarOpen) {
+      setGlowingTopic(lastXpGain.topicId);
+      const timer = setTimeout(() => {
+        setGlowingTopic(null);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [lastXpGain, sidebarOpen]);
 
   return (
     <>
@@ -74,6 +91,21 @@ export default function Sidebar() {
           <ChevronLeft className="w-5 h-5 text-night-800" />
         )}
       </button>
+
+      {/* Overlay - click to close */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/20 z-30 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="סגור תפריט"
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar */}
       <AnimatePresence>
@@ -103,6 +135,12 @@ export default function Sidebar() {
                   <Link
                     key={item.path}
                     to={item.path}
+                    onClick={() => {
+                      // Close sidebar on mobile after navigation
+                      if (window.innerWidth < 768) {
+                        setSidebarOpen(false);
+                      }
+                    }}
                     className={clsx(
                       'flex items-center gap-3 px-4 py-3 rounded-2xl mb-1 transition-all duration-200',
                       isActive
@@ -153,12 +191,24 @@ export default function Sidebar() {
                     </div>
 
                     {/* Progress bar */}
-                    <div className={clsx('h-2.5 rounded-full overflow-hidden', colors.bg)}>
+                    <div 
+                      className={clsx(
+                        'h-2.5 rounded-full overflow-hidden transition-shadow duration-300',
+                        colors.bg,
+                        glowingTopic === topic.id && colors.glow
+                      )}
+                    >
                       <motion.div
                         className={clsx('h-full rounded-full', colors.fill)}
                         initial={{ width: 0 }}
-                        animate={{ width: `${xpProgress.percentage}%` }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                        animate={{ 
+                          width: `${xpProgress.percentage}%`,
+                          scale: glowingTopic === topic.id ? [1, 1.05, 1] : 1,
+                        }}
+                        transition={{ 
+                          width: { duration: 0.8, ease: 'easeOut' },
+                          scale: { duration: 0.3, repeat: glowingTopic === topic.id ? 2 : 0 }
+                        }}
                       />
                     </div>
 
