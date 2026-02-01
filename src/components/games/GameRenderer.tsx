@@ -3,6 +3,7 @@ import MCQGame from './MCQGame';
 import DragOrderGame from './DragOrderGame';
 import SequenceGame from './SequenceGame';
 import SelectChipsGame from './SelectChipsGame';
+import ReadAloudButton from '../ui/ReadAloudButton';
 
 interface GameRendererProps {
   item: Item;
@@ -95,10 +96,19 @@ export default function GameRenderer({ item, state, selectedAnswer, onAnswer, on
         {item.topicId === 'vocabulary' && '💎 אוצר מילים'}
       </div>
 
-      {/* Story text for comprehension */}
+      {/* Story text for comprehension with read aloud */}
       {item.storyText && (
-        <div className="bg-sand-50 rounded-2xl p-4 mb-6 text-lg leading-relaxed text-night-800">
-          {item.storyText}
+        <div className="bg-sand-50 rounded-2xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <p className="text-lg leading-relaxed text-night-800 flex-1">
+              {item.storyText}
+            </p>
+            <ReadAloudButton 
+              text={item.storyText} 
+              size="sm" 
+              className="flex-shrink-0"
+            />
+          </div>
         </div>
       )}
 

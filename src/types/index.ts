@@ -155,6 +155,43 @@ export const XP_RULES = {
   streakBonus: 1,        // +1 XP for 3 correct in a row
 };
 
+// Leaderboard scoring rules per game type
+export const SCORE_RULES = {
+  mcq: { correct: 10, wrong: -3 },
+  'drag-order': { correct: 15, wrong: -5 },
+  'select-chips': { correct: 12, wrong: -4 },
+  sequence: { correct: 15, wrong: -5 },
+  'drag-match': { correct: 12, wrong: -4 },
+};
+
+export const STREAK_BONUSES = {
+  streak3: 5,   // 3 correct in a row
+  streak5: 10,  // 5 correct in a row
+  perfect: 20,  // 100% accuracy in a game
+};
+
+// Classmate for leaderboard
+export interface Classmate {
+  id: string;
+  name: string;
+  score: number;
+  avatar?: string;
+  isCurrentUser?: boolean;
+}
+
+// Initial classmates data
+export const INITIAL_CLASSMATES: Classmate[] = [
+  { id: 'noa', name: 'נועה', score: 847 },
+  { id: 'itay', name: 'איתי', score: 792 },
+  { id: 'maya', name: 'מאיה', score: 756 },
+  { id: 'yonatan', name: 'יונתן', score: 698 },
+  { id: 'shira', name: 'שירה', score: 645 },
+  { id: 'amit', name: 'עמית', score: 589 },
+  { id: 'dana', name: 'דנה', score: 534 },
+  { id: 'ori', name: 'אורי', score: 478 },
+  { id: 'tamar', name: 'תמר', score: 412 },
+];
+
 // Topics definition
 export const TOPICS: Topic[] = [
   {

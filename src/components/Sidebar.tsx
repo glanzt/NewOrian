@@ -1,78 +1,64 @@
-import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, 
-  Zap, 
-  BookOpen, 
+  Heart, 
   BarChart3, 
   Trophy, 
   ChevronLeft,
   ChevronRight,
-  TrendingUp,
-  TrendingDown,
-  Minus
+  CheckCircle,
+  Circle,
+  TrendingUp
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { TOPICS, type TopicId } from '../types';
 import clsx from 'clsx';
 
+// Encouraging messages based on rank (feminine for Yael)
+function getEncouragement(rank: number, total: number): string {
+  if (rank === 1) return 'את מובילה! 👑';
+  if (rank === 2) return 'כמעט ראשונה! 🚀';
+  if (rank === 3) return 'על הפודיום! 🏆';
+  if (rank <= 5) return 'קרובה לפודיום! 💪';
+  if (rank <= Math.ceil(total / 2)) return 'בואי נעלה! ⬆️';
+  return 'בואי נעלה! 🌟';
+}
+
 const navItems = [
-  { path: '/', icon: Home, label: 'בית' },
-  { path: '/daily', icon: Zap, label: 'תרגול יומי' },
-  { path: '/lessons', icon: BookOpen, label: 'שיעורים' },
+  { path: '/dashboard', icon: Home, label: 'בית' },
+  { path: '/interests', icon: Heart, label: 'מה מעניין אותי' },
   { path: '/progress', icon: BarChart3, label: 'התקדמות' },
-  { path: '/rewards', icon: Trophy, label: 'פרסים' },
+  { path: '/leaderboard', icon: Trophy, label: 'לידרבורד כיתתי' },
 ];
 
-const topicColorClasses: Record<string, { bg: string; fill: string; text: string; glow: string }> = {
+const topicColorClasses: Record<TopicId, { bg: string; text: string }> = {
   reading: { 
     bg: 'bg-reading-100', 
-    fill: 'bg-gradient-to-l from-reading-500 to-reading-400',
     text: 'text-reading-700',
-    glow: 'shadow-[0_0_20px_rgba(59,130,246,0.6)]'
   },
   comprehension: { 
     bg: 'bg-comprehension-100', 
-    fill: 'bg-gradient-to-l from-comprehension-500 to-comprehension-400',
     text: 'text-comprehension-700',
-    glow: 'shadow-[0_0_20px_rgba(168,85,247,0.6)]'
   },
   writing: { 
     bg: 'bg-writing-100', 
-    fill: 'bg-gradient-to-l from-writing-500 to-writing-400',
     text: 'text-writing-700',
-    glow: 'shadow-[0_0_20px_rgba(34,197,94,0.6)]'
   },
   vocabulary: { 
     bg: 'bg-vocabulary-100', 
-    fill: 'bg-gradient-to-l from-vocabulary-500 to-vocabulary-400',
     text: 'text-vocabulary-700',
-    glow: 'shadow-[0_0_20px_rgba(249,115,22,0.6)]'
   },
 };
 
-function TrendIcon({ trend }: { trend: 'up' | 'down' | 'stable' }) {
-  if (trend === 'up') return <TrendingUp className="w-4 h-4 text-writing-500" />;
-  if (trend === 'down') return <TrendingDown className="w-4 h-4 text-red-500" />;
-  return <Minus className="w-4 h-4 text-sand-400" />;
-}
-
 export default function Sidebar() {
   const location = useLocation();
-  const { sidebarOpen, setSidebarOpen, userProgress, getXpProgress, lastXpGain } = useStore();
-  const [glowingTopic, setGlowingTopic] = useState<TopicId | null>(null);
-
-  // Track XP gains and trigger glow animation
-  useEffect(() => {
-    if (lastXpGain && sidebarOpen) {
-      setGlowingTopic(lastXpGain.topicId);
-      const timer = setTimeout(() => {
-        setGlowingTopic(null);
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [lastXpGain, sidebarOpen]);
+  const { sidebarOpen, setSidebarOpen, userProgress, getUserRank, getLeaderboard } = useStore();
+  
+  const today = new Date().toDateString();
+  const userRank = getUserRank();
+  const totalParticipants = getLeaderboard().length;
+  const encouragement = getEncouragement(userRank, totalParticipants);
 
   return (
     <>
@@ -117,8 +103,36 @@ export default function Sidebar() {
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed right-0 top-0 h-full w-72 bg-white/95 backdrop-blur-xl shadow-card z-40 overflow-y-auto"
           >
+            {/* Rank Badge - Above Profile */}
+            <div className="flex justify-center pt-14 pb-2">
+              <Link 
+                to="/leaderboard"
+                className="flex items-center gap-2 bg-gradient-to-r from-comprehension-100 to-writing-100 border border-comprehension-200 rounded-full px-3 py-1.5 hover:shadow-md transition-shadow"
+              >
+                <TrendingUp className="w-4 h-4 text-comprehension-600" />
+                <span className="text-comprehension-700 text-sm font-medium">מקום</span>
+                <span className="bg-gradient-to-r from-comprehension-500 to-writing-500 text-white font-bold px-2.5 py-0.5 rounded-full text-base shadow-sm">
+                  {userRank}
+                </span>
+                <span className="text-comprehension-600 text-xs">
+                  {encouragement}
+                </span>
+              </Link>
+            </div>
+            
+            {/* Profile Picture */}
+            <div className="flex justify-center pb-2">
+              <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-reading-200 shadow-lg">
+                <img 
+                  src="/yael-profile.png" 
+                  alt="יעל"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            
             {/* Logo/Title */}
-            <div className="p-6 pt-16">
+            <div className="px-6 pb-4 text-center">
               <h1 className="text-2xl font-bold text-night-900">
                 מסע האוריינות 📚
               </h1>
@@ -158,72 +172,64 @@ export default function Sidebar() {
             {/* Divider */}
             <div className="h-px bg-sand-200 mx-6 my-4" />
 
-            {/* Topic Progress */}
-            <div className="px-4 pb-6">
-              <h3 className="text-sm font-semibold text-night-800/60 px-4 mb-3">
-                התקדמות לפי מסלול
+            {/* Topic Progress - Checklist style */}
+            <div className="px-4 pb-4">
+              <h3 className="text-sm font-semibold text-night-800/60 px-2 mb-2">
+                תרגול היום לפי מסלול
               </h3>
               
-              {TOPICS.map((topic) => {
-                const progress = userProgress.topics[topic.id];
-                const xpProgress = getXpProgress(progress.xp);
-                const colors = topicColorClasses[topic.id];
+              <div className="space-y-1.5">
+                {TOPICS.map((topic) => {
+                  const progress = userProgress.topics[topic.id];
+                  const colors = topicColorClasses[topic.id];
+                  
+                  // Check if practiced today
+                  const lastPracticed = progress.lastPracticed 
+                    ? new Date(progress.lastPracticed).toDateString() 
+                    : null;
+                  const practicedToday = lastPracticed === today;
 
-                return (
-                  <div
-                    key={topic.id}
-                    className="p-3 rounded-2xl hover:bg-sand-50 transition-colors mb-2"
-                  >
-                    {/* Topic header */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{topic.icon}</span>
-                        <span className="font-medium text-night-900 text-sm">
-                          {topic.nameHe}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={clsx('text-xs font-bold', colors.text)}>
-                          רמה {progress.level}
-                        </span>
-                        <TrendIcon trend={progress.weeklyTrend} />
-                      </div>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div 
+                  return (
+                    <div
+                      key={topic.id}
                       className={clsx(
-                        'h-2.5 rounded-full overflow-hidden transition-shadow duration-300',
-                        colors.bg,
-                        glowingTopic === topic.id && colors.glow
+                        'flex items-center gap-2 p-2 rounded-xl transition-colors',
+                        practicedToday ? 'bg-writing-50' : 'bg-sand-50'
                       )}
                     >
-                      <motion.div
-                        className={clsx('h-full rounded-full', colors.fill)}
-                        initial={{ width: 0 }}
-                        animate={{ 
-                          width: `${xpProgress.percentage}%`,
-                          scale: glowingTopic === topic.id ? [1, 1.05, 1] : 1,
-                        }}
-                        transition={{ 
-                          width: { duration: 0.8, ease: 'easeOut' },
-                          scale: { duration: 0.3, repeat: glowingTopic === topic.id ? 2 : 0 }
-                        }}
-                      />
-                    </div>
-
-                    {/* XP info */}
-                    <div className="flex items-center justify-between mt-1.5">
-                      <span className="text-xs text-night-800/50">
-                        {Math.round(xpProgress.current)} / {xpProgress.required} XP
+                      {/* Status icon */}
+                      <div className={clsx(
+                        'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0',
+                        practicedToday 
+                          ? 'bg-writing-500 text-white' 
+                          : 'bg-sand-200 text-sand-400'
+                      )}>
+                        {practicedToday ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          <Circle className="w-4 h-4" />
+                        )}
+                      </div>
+                      
+                      {/* Topic icon */}
+                      <span className="text-lg">{topic.icon}</span>
+                      
+                      {/* Topic name */}
+                      <span className={clsx(
+                        'flex-1 text-sm font-medium truncate',
+                        practicedToday ? 'text-night-900' : 'text-night-800/70'
+                      )}>
+                        {topic.nameHe}
                       </span>
-                      <span className="text-xs text-night-800/50">
-                        {progress.practicedCount} תרגילים
+                      
+                      {/* Level badge */}
+                      <span className={clsx('text-[10px] font-bold px-1.5 py-0.5 rounded', colors.bg, colors.text)}>
+                        {progress.level}
                       </span>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
             {/* Daily streak */}

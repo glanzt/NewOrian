@@ -128,7 +128,7 @@ export default function LessonRunner() {
             לשיעור הבא
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className="btn-secondary"
           >
             <Home className="w-5 h-5" />

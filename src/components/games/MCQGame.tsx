@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { Volume2, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import type { Item, ItemState } from '../../types';
+import ReadAloudButton from '../ui/ReadAloudButton';
 import clsx from 'clsx';
 
 interface MCQGameProps {
@@ -15,29 +16,17 @@ export default function MCQGame({ item, state, selectedAnswer, onAnswer, onNext 
   const isAnswered = state !== 'idle';
   const showNext = state === 'completed';
 
-  // Play audio if available
-  const playAudio = () => {
-    if (item.promptAudioUrl) {
-      const audio = new Audio(item.promptAudioUrl);
-      audio.play();
-    }
-  };
-
   return (
     <div>
-      {/* Prompt */}
+      {/* Prompt with read aloud */}
       <div className="mb-6">
         <div className="flex items-start gap-3">
-          {item.promptAudioUrl && (
-            <button
-              onClick={playAudio}
-              className="flex-shrink-0 w-12 h-12 bg-reading-100 rounded-xl flex items-center justify-center hover:bg-reading-200 transition-colors"
-              aria-label="השמע"
-            >
-              <Volume2 className="w-6 h-6 text-reading-600" />
-            </button>
-          )}
-          <h2 className="text-2xl font-bold text-night-900 leading-relaxed">
+          <ReadAloudButton 
+            text={item.prompt} 
+            size="sm"
+            className="flex-shrink-0 mt-1"
+          />
+          <h2 className="text-2xl font-bold text-night-900 leading-relaxed flex-1">
             {item.prompt}
           </h2>
         </div>
@@ -52,37 +41,44 @@ export default function MCQGame({ item, state, selectedAnswer, onAnswer, onNext 
           const showWrong = isAnswered && isSelected && !isCorrect;
 
           return (
-            <motion.button
-              key={option.id}
-              onClick={() => !isAnswered && onAnswer(option.id)}
-              disabled={isAnswered}
-              className={clsx(
-                'option-chip relative overflow-hidden',
-                !isAnswered && 'hover:bg-sand-50',
-                isSelected && !isAnswered && 'option-chip-selected',
-                showCorrect && 'option-chip-correct',
-                showWrong && 'option-chip-wrong'
-              )}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={!isAnswered ? { scale: 1.02 } : {}}
-              whileTap={!isAnswered ? { scale: 0.98 } : {}}
-            >
-              {option.text}
-              
-              {/* Correct/Wrong indicator */}
-              {showCorrect && (
-                <span className="absolute top-2 left-2">
-                  <CheckCircle className="w-6 h-6 text-writing-500" />
-                </span>
-              )}
-              {showWrong && (
-                <span className="absolute top-2 left-2">
-                  <XCircle className="w-6 h-6 text-red-500" />
-                </span>
-              )}
-            </motion.button>
+            <div key={option.id} className="flex items-center gap-2">
+              {/* Read aloud button for each answer */}
+              <ReadAloudButton 
+                text={option.text} 
+                size="sm"
+                className="flex-shrink-0"
+              />
+              <motion.button
+                onClick={() => !isAnswered && onAnswer(option.id)}
+                disabled={isAnswered}
+                className={clsx(
+                  'option-chip relative overflow-hidden flex-1',
+                  !isAnswered && 'hover:bg-sand-50',
+                  isSelected && !isAnswered && 'option-chip-selected',
+                  showCorrect && 'option-chip-correct',
+                  showWrong && 'option-chip-wrong'
+                )}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={!isAnswered ? { scale: 1.02 } : {}}
+                whileTap={!isAnswered ? { scale: 0.98 } : {}}
+              >
+                {option.text}
+                
+                {/* Correct/Wrong indicator */}
+                {showCorrect && (
+                  <span className="absolute top-2 left-2">
+                    <CheckCircle className="w-6 h-6 text-writing-500" />
+                  </span>
+                )}
+                {showWrong && (
+                  <span className="absolute top-2 left-2">
+                    <XCircle className="w-6 h-6 text-red-500" />
+                  </span>
+                )}
+              </motion.button>
+            </div>
           );
         })}
       </div>
