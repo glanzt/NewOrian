@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Trophy, Medal, TrendingUp, TrendingDown, Minus, Star } from 'lucide-react';
+import { Trophy, Medal, TrendingUp, TrendingDown, Star } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import clsx from 'clsx';
 

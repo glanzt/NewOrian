@@ -736,7 +736,7 @@ function createVocabularyGame(baseId: string, analysis: ArticleAnalysis, storyTe
   }
 }
 
-function createSynonymGame(baseId: string, analysis: ArticleAnalysis, storyText: string): Item {
+function createSynonymGame(baseId: string, _analysis: ArticleAnalysis, storyText: string): Item {
   // Common words with synonyms for 2nd graders
   const synonymPairs: Array<{ word: string; synonym: string; wrong: string[] }> = [
     { word: 'גדול', synonym: 'ענק', wrong: ['קטן', 'צר', 'נמוך'] },
@@ -783,7 +783,7 @@ function createSynonymGame(baseId: string, analysis: ArticleAnalysis, storyText:
   };
 }
 
-function createAntonymGame(baseId: string, analysis: ArticleAnalysis, storyText: string): Item {
+function createAntonymGame(baseId: string, _analysis: ArticleAnalysis, storyText: string): Item {
   // Common words with antonyms for 2nd graders
   const antonymPairs: Array<{ word: string; antonym: string; wrong: string[] }> = [
     { word: 'גדול', antonym: 'קטן', wrong: ['ענק', 'רחב', 'גבוה'] },
@@ -829,7 +829,7 @@ function createAntonymGame(baseId: string, analysis: ArticleAnalysis, storyText:
   };
 }
 
-function createContextMeaningGame(baseId: string, analysis: ArticleAnalysis, storyText: string): Item {
+function createContextMeaningGame(baseId: string, _analysis: ArticleAnalysis, storyText: string): Item {
   // Words with multiple meanings - understand from context
   const multiMeaningWords: Array<{ 
     word: string; 
